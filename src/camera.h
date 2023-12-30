@@ -54,9 +54,35 @@ private:
         return (1.0 - a) * color(1.0, 1.0, 1.0) + a * color(0.5, 0.7, 1.0);
     }
 
+    ray get_ray(int i, int j) const
+    {
+        // Get a randomly sampled camera ray for the pixel at location i,j
+        point3 pixel_center = pixel00_loc + (pixel_delta_u * i) + (pixel_delta_v * j);
+        point3 pixel_sample = pixel_center + pixel_sample_square();
+
+        point3 ray_origin = center;
+        vec3 ray_direction = pixel_sample - ray_origin;
+
+        return ray(ray_origin, ray_direction);
+
+        // not a unit vector
+        ray r(center, ray_direction);
+    }
+
+    vec3 pixel_sample_square() const
+    {
+        // Returns a random point in the square surrounding a pixel at the origin
+        double px = -0.5 + random_double();
+        double py = -0.5 + random_double();
+
+        return (px * pixel_delta_u) + (py * pixel_delta_v);
+    }
+
 public:
     double aspect_ratio = 1.0;
     int image_width = 100;
+    int samples_per_pixel = 10;
+
     void render(const hittable &world)
     {
         initialize();
@@ -70,19 +96,18 @@ public:
             std::clog << "\r Scanline remaining : " << (image_height - j) << ' ' << std::flush;
             for (int i = 0; i < image_width; i++)
             {
-                point3 pixel_center = pixel00_loc + (pixel_delta_u * i) + (pixel_delta_v * j);
-                vec3 ray_direction = pixel_center - center;
+                color pixel_color(0, 0, 0);
+                for (int sample = 0; sample < samples_per_pixel; sample++)
+                {
+                    ray r = get_ray(i, j);
+                    pixel_color += ray_color(r, world);
+                }
 
-                // not a unit vector
-                ray r(center, ray_direction);
-
-                color pixel_color = ray_color(r, world);
-
-                write_color(std::cout, pixel_color);
+                write_color(std::cout, pixel_color, samples_per_pixel);
             }
         }
 
-        std::clog << "\r Done !                   \n";
+        std::clog << "\rDone !                   \n";
     }
 };
 
