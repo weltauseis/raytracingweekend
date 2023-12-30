@@ -9,7 +9,7 @@ color ray_color(const ray &r, const hittable &world)
 {
     hit_record rec;
 
-    if (world.hit(r, 0, infinity, rec))
+    if (world.hit(r, interval(0, infinity), rec))
     {
         return 0.5 * (rec.normal + color(1, 1, 1));
     }
@@ -24,7 +24,7 @@ int main()
     // image
 
     double aspect_ratio = 16.0 / 9.0;
-    int image_width = 800;
+    int image_width = 400;
 
     int image_height = static_cast<int>(image_width / aspect_ratio);
     image_height = (image_height < 1) ? 1 : image_height;
