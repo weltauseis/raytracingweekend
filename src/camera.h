@@ -4,6 +4,7 @@
 #include "rtweekend.h"
 #include "hittable.h"
 #include "color.h"
+#include "material.h"
 
 class camera
 {
@@ -48,8 +49,12 @@ private:
         // if we hit smt, return the color-converted normal vector
         if (world.hit(r, interval(0.001, infinity), rec))
         {
-            vec3 direction = rec.normal + random_in_unit_sphere();
-            return 0.5 * ray_color(ray(rec.p, direction), depth - 1, world);
+            ray scattered;
+            color attenuation;
+            if (rec.mat->scatter(r, rec, attenuation, scattered))
+                return attenuation * ray_color(scattered, depth - 1, world);
+
+            return color(0, 0, 0);
         }
 
         // else, "sky" effect based on y component of ray
