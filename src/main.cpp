@@ -11,8 +11,8 @@ int main()
 
     auto ground_mat = make_shared<lambertian>(color(0.141, 0.18, 0.451));
     auto ball_mat = make_shared<lambertian>(color(0.98, 0.604, 1));
-    auto metal_mat = make_shared<metal>(color(1, 1, 1));
-    auto tinted_metal_mat = make_shared<metal>(color(0.443, 1, 0.659));
+    auto metal_mat = make_shared<metal>(color(1, 1, 1), 0.7);
+    auto tinted_metal_mat = make_shared<metal>(color(0.443, 1, 0.659), 0.01);
 
     // world
 
